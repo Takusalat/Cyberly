@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyberly — Daten, neu gedacht.</title>
+<style>
+  /* ── Reset ────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #06060b;
+    --surface: #0d0d16;
+    --surface2: #13131f;
+    --surface3: #1a1a2a;
+    --border: #1f1f35;
+    --text: #eeeef5;
+    --text2: #8888a8;
+    --text3: #55556a;
+    --accent: #6c3cfc;
+    --accent-light: #a47cff;
+    --accent2: #00e0d0;
+    --accent3: #fc3c8c;
+    --gradient: linear-gradient(135deg, #6c3cfc, #00e0d0);
+    --gradient2: linear-gradient(135deg, #6c3cfc, #fc3c8c);
+    --glow: rgba(108, 60, 252, 0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── Utilities ────────────────────────────────── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .gradient-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-2 {
+    background: var(--gradient2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section {
+    padding: 120px 0;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent-light);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .section-subtitle {
+    font-size: 18px;
+    color: var(--text2);
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  /* ── Scroll Animation ─────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Navigation ───────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 0;
+    background: rgba(6, 6, 11, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+  }
+  nav.scrolled {
+    border-bottom-color: var(--border);
+    padding: 14px 0;
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    padding: 10px 24px;
+    background: var(--accent);
+    color: white !important;
+    border-radius: 8px;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+  }
+  .nav-cta:hover {
+    background: var(--accent-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px var(--glow);
+  }
+
+  /* ── Hero Section ─────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 80px;
+  }
+
+  /* Animated background orbs */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: orbFloat 20s ease-in-out infinite;
+  }
+  .orb-1 {
+    width: 600px; height: 600px;
+    background: rgba(108, 60, 252, 0.12);
+    top: -200px; right: -100px;
+    animation-delay: 0s;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: rgba(0, 224, 208, 0.08);
+    bottom: -100px; left: -50px;
+    animation-delay: -7s;
+  }
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: rgba(252, 60, 140, 0.06);
+    top: 50%; left: 50%;
+    animation-delay: -14s;
+  }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.05); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+  }
+
+  /* Grid pattern overlay */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108, 60, 252, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108, 60, 252, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 32px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 224, 208, 0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(0, 224, 208, 0); }
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 7vw, 84px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--text2);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--glow);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: rgba(108, 60, 252, 0.05);
+  }
+
+  /* Hero stats ticker */
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  }
+
+  .hero-stat-label {
+    font-size: 13px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── Logos Ticker ──────────────────────────────── */
+  .logos-section {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .logos-label {
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text3);
+    margin-bottom: 32px;
+  }
+
+  .logos-track {
+    display: flex;
+    gap: 64px;
+    animation: scroll 30s linear infinite;
+    width: max-content;
+  }
+
+  .logo-item {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text3);
+    white-space: nowrap;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+  }
+  .logo-item:hover { opacity: 1; }
+
+  @keyframes scroll {
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── Problem Section ──────────────────────────── */
+  .problem-section {
+    background: var(--surface);
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    margin-top: 48px;
+  }
+
+  .problem-visual {
+    position: relative;
+    aspect-ratio: 1;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .manhole-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    animation: manholePulse 4s ease-in-out infinite;
+  }
+  .manhole-ring:nth-child(1) {
+    inset: 0;
+    border-color: rgba(108, 60, 252, 0.15);
+    animation-delay: 0s;
+  }
+  .manhole-ring:nth-child(2) {
+    inset: 15%;
+    border-color: rgba(108, 60, 252, 0.25);
+    animation-delay: -1s;
+  }
+  .manhole-ring:nth-child(3) {
+    inset: 30%;
+    border-color: rgba(108, 60, 252, 0.35);
+    animation-delay: -2s;
+  }
+  .manhole-ring:nth-child(4) {
+    inset: 42%;
+    background: rgba(108, 60, 252, 0.05);
+    border-color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .manhole-center {
+    position: absolute;
+    inset: 42%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    z-index: 2;
+  }
+
+  @keyframes manholePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.03); opacity: 0.7; }
+  }
+
+  .problem-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .problem-stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .problem-stat-value {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .problem-stat-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* ── Solution Section ─────────────────────────── */
+  .solution-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .sol-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .sol-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gradient);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sol-card:hover {
+    border-color: rgba(108, 60, 252, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .sol-card:hover::before { opacity: 1; }
+
+  .sol-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .sol-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .sol-card p {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  /* ── Numbers / Metrics Section ────────────────── */
+  .metrics-section {
+    background: var(--surface);
+    text-align: center;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-top: 64px;
+  }
+
+  .metric {
+    padding: 32px;
+  }
+
+  .metric-value {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .metric-label {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* ── Team Section ─────────────────────────────── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .team-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .team-card:hover {
+    border-color: rgba(108, 60, 252, 0.3);
+    transform: translateY(-4px);
+  }
+
+  .team-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    background: var(--surface3);
+    border: 2px solid var(--border);
+  }
+
+  .team-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .team-role {
+    font-size: 13px;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+  }
+
+  .team-desc {
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.5;
+  }
+
+  /* ── Buzzword Marquee ─────────────────────────── */
+  .buzzword-section {
+    padding: 40px 0;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .buzz-track {
+    display: flex;
+    gap: 24px;
+    animation: buzzScroll 25s linear infinite;
+    width: max-content;
+  }
+
+  .buzz-item {
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    transition: all 0.3s;
+  }
+  .buzz-item:hover {
+    border-color: var(--accent);
+    color: var(--accent-light);
+    background: rgba(108, 60, 252, 0.1);
+  }
+
+  @keyframes buzzScroll {
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── Pricing Section ──────────────────────────── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 56px;
+    align-items: start;
+  }
+
+  .price-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .price-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, rgba(108, 60, 252, 0.08) 0%, var(--surface2) 100%);
+    transform: scale(1.03);
+  }
+  .price-card.featured::before {
+    content: 'Beliebteste Wahl';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 16px;
+    background: var(--gradient);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: white;
+    white-space: nowrap;
+  }
+
+  .price-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .price-amount {
+    font-size: 42px;
+    font-weight: 900;
+    margin-bottom: 4px;
+    letter-spacing: -1px;
+  }
+  .price-amount span {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text2);
+  }
+
+  .price-desc {
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .price-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .price-features li {
+    font-size: 14px;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .price-features li::before {
+    content: '✓';
+    color: var(--accent2);
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .price-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .price-btn:hover {
+    border-color: var(--accent);
+    background: rgba(108, 60, 252, 0.05);
+  }
+  .price-card.featured .price-btn {
+    background: var(--gradient);
+    border: none;
+    color: white;
+  }
+  .price-card.featured .price-btn:hover {
+    box-shadow: 0 8px 30px var(--glow);
+    transform: translateY(-2px);
+  }
+
+  /* ── Testimonial ──────────────────────────────── */
+  .testimonial-section {
+    background: var(--surface);
+  }
+
+  .testimonial-card {
+    max-width: 700px;
+    margin: 48px auto 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+  }
+
+  .testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 80px;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.3;
+    line-height: 1;
+  }
+
+  .testimonial-text {
+    font-size: 20px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .testimonial-author {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .testimonial-role {
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  /* ── CTA Section ──────────────────────────────── */
+  .cta-section {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(108, 60, 252, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .cta-section .section-title { max-width: 700px; margin: 0 auto 20px; }
+  .cta-section .section-subtitle { margin: 0 auto 40px; text-align: center; }
+
+  /* ── Footer ───────────────────────────────────── */
+  footer {
+    padding: 60px 0 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .footer-brand p {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-top: 12px;
+  }
+
+  .footer-col h4 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text2);
+    margin-bottom: 16px;
+  }
+
+  .footer-col a {
+    display: block;
+    font-size: 14px;
+    color: var(--text3);
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--text); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text3);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-bottom a {
+    color: var(--text3);
+    text-decoration: none;
+  }
+  .footer-bottom a:hover { color: var(--text2); }
+
+  /* ── Responsive ───────────────────────────────── */
+  @media (max-width: 900px) {
+    .problem-grid { grid-template-columns: 1fr; }
+    .solution-cards { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .team-grid { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .price-card.featured { transform: scale(1); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .hero-stats { gap: 32px; }
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 0 20px; }
+    .section { padding: 80px 0; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .team-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-direction: column; gap: 20px; }
+    .hero-ctas { flex-direction: column; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="#" class="logo">cyber<span>ly</span></a>
+    <ul class="nav-links">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#solution">Lösung</a></li>
+      <li><a href="#metrics">Zahlen</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#cta" class="nav-cta">Early Access</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="container hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Series C Funded — $80M raised
+    </div>
+
+    <h1>Daten,<br><span class="gradient-text">neu gedacht.</span></h1>
+
+    <p class="hero-subtitle">
+      Wir revolutionieren die globale Kanaldeckel-Industrie mit einem neuralen Netzwerk,
+      trainiert auf 47 Millionen Datenpunkte von Gegenständen, die niemand messen wollte.
+    </p>
+
+    <div class="hero-ctas">
+      <a href="#cta" class="btn-primary">Early Access sichern →</a>
+      <a href="#solution" class="btn-secondary">So funktioniert's</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value gradient-text">47M+</span>
+        <span class="hero-stat-label">Datenpunkte erfasst</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value gradient-text-2">$25B</span>
+        <span class="hero-stat-label">Bewertung (Decacorn)</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" style="color: var(--accent2);">150+</span>
+        <span class="hero-stat-label">Mitarbeiter weltweit</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" style="color: var(--accent3);">0</span>
+        <span class="hero-stat-label">Leute wissen, was die anderen tun</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     LOGOS TICKER
+     ═══════════════════════════════════════════════ -->
+<section class="logos-section">
+  <div class="logos-label">Vertraut von zukunftsorientierten Unternehmen, die wir erfunden haben</div>
+  <div class="logos-track" id="logos-track">
+    <span class="logo-item">MegaCorp Industries</span>
+    <span class="logo-item">QuantumLeap AG</span>
+    <span class="logo-item">NeoVenture Capital</span>
+    <span class="logo-item">SynergyMax GmbH</span>
+    <span class="logo-item">DataDreams Inc.</span>
+    <span class="logo-item">FuturePipe Solutions</span>
+    <span class="logo-item">Stadt Zürich (inoffiziell)</span>
+    <span class="logo-item">BlockPipe Foundation</span>
+    <!-- Duplikat für nahtlosen Loop -->
+    <span class="logo-item">MegaCorp Industries</span>
+    <span class="logo-item">QuantumLeap AG</span>
+    <span class="logo-item">NeoVenture Capital</span>
+    <span class="logo-item">SynergyMax GmbH</span>
+    <span class="logo-item">DataDreams Inc.</span>
+    <span class="logo-item">FuturePipe Solutions</span>
+    <span class="logo-item">Stadt Zürich (inoffiziell)</span>
+    <span class="logo-item">BlockPipe Foundation</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     PROBLEM SECTION
+     ═══════════════════════════════════════════════ -->
+<section class="section problem-section" id="problem">
+  <div class="container">
+    <div class="problem-grid">
+      <div class="reveal">
+        <span class="section-label">Das Problem</span>
+        <h2 class="section-title">Die Kanaldeckel-Industrie<br>ist <span class="gradient-text-2">broken.</span></h2>
+        <p class="section-subtitle">
+          Weltweit existieren über 300 Millionen Kanaldeckel — und keiner von ihnen
+          ist smart. Keine Sensoren. Kein Dashboard. Keine API. Das ist wie das Internet 1994,
+          nur für Abwasserinfrastruktur.
+        </p>
+
+        <div class="problem-stats">
+          <div class="problem-stat reveal">
+            <div class="problem-stat-value gradient-text">300M+</div>
+            <div class="problem-stat-desc">Nicht-vernetzte Kanaldeckel weltweit</div>
+          </div>
+          <div class="problem-stat reveal">
+            <div class="problem-stat-value gradient-text-2">$0</div>
+            <div class="problem-stat-desc">Bisherige Investitionen in Kanaldeckel-AI</div>
+          </div>
+          <div class="problem-stat reveal">
+            <div class="problem-stat-value" style="color: var(--accent2);">0%</div>
+            <div class="problem-stat-desc">Kanaldeckel mit Internet-Verbindung</div>
+          </div>
+          <div class="problem-stat reveal">
+            <div class="problem-stat-value" style="color: var(--accent3);">∞</div>
+            <div class="problem-stat-desc">Ungenutztes Disruptionspotenzial</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated manhole visual -->
+      <div class="problem-visual reveal">
+        <div class="manhole-ring"></div>
+        <div class="manhole-ring"></div>
+        <div class="manhole-ring"></div>
+        <div class="manhole-ring"></div>
+        <div class="manhole-center">🕳️</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SOLUTION SECTION
+     ═══════════════════════════════════════════════ -->
+<section class="section" id="solution">
+  <div class="container">
+    <div class="reveal" style="text-align: center; max-width: 700px; margin: 0 auto;">
+      <span class="section-label">Die Lösung</span>
+      <h2 class="section-title">Cyberly macht Kanaldeckel<br><span class="gradient-text">intelligent.</span></h2>
+      <p class="section-subtitle" style="margin: 0 auto;">
+        Unser neurales Netzwerk, trainiert auf 47 Millionen Datenpunkte von Gegenständen
+        die niemand messen wollte, bringt Zero-Latency Intelligence zu Infrastruktur.
+      </p>
+    </div>
+
+    <div class="solution-cards">
+      <div class="sol-card reveal">
+        <span class="sol-icon">🧠</span>
+        <h3>Quantum Neural Mapping</h3>
+        <p>
+          Unser proprietärer Algorithmus scannt jeden Kanaldeckel mit
+          quantenbasierter Precision. 47 Millionen Datenpunkte. Zero Latency.
+          Wir wissen nicht genau warum es funktioniert, aber die Graphen gehen nach oben.
+        </p>
+      </div>
+
+      <div class="sol-card reveal">
+        <span class="sol-icon">📡</span>
+        <h3>Real-Time Deckel-Telemetrie</h3>
+        <p>
+          Jeder vernetzte Kanaldeckel sendet 420 Datenpunkte pro Sekunde.
+          Temperatur, Vibration, existenzielle Zufriedenheit — alles wird erfasst
+          und in einem Growth-Hacking-optimierten Dashboard visualisiert.
+        </p>
+      </div>
+
+      <div class="sol-card reveal">
+        <span class="sol-icon">🎮</span>
+        <h3>Gamified Infrastructure</h3>
+        <p>
+          Sammle Punkte für jeden gescannten Kanaldeckel. Steige in der globalen
+          Rangliste auf. Schalte NFT-Badges frei. Ja, wir haben Kanaldeckel-Wartung
+          zu einem Spiel gemacht. Pivot-Ready seit Tag 1.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     BUZZWORD MARQUEE
+     ═══════════════════════════════════════════════ -->
+<section class="buzzword-section">
+  <div class="buzz-track" id="buzz-track">
+    <span class="buzz-item">Growth Hacking</span>
+    <span class="buzz-item">Zero-Latency</span>
+    <span class="buzz-item">Gamified</span>
+    <span class="buzz-item">Pivot-Ready</span>
+    <span class="buzz-item">Quantum</span>
+    <span class="buzz-item">AI-Powered</span>
+    <span class="buzz-item">Blockchain-Adjacent</span>
+    <span class="buzz-item">Web3-Enabled</span>
+    <span class="buzz-item">Cloud-Native</span>
+    <span class="buzz-item">Decentralized</span>
+    <span class="buzz-item">Hyper-Scalable</span>
+    <span class="buzz-item">Neural-First</span>
+    <!-- Duplikat -->
+    <span class="buzz-item">Growth Hacking</span>
+    <span class="buzz-item">Zero-Latency</span>
+    <span class="buzz-item">Gamified</span>
+    <span class="buzz-item">Pivot-Ready</span>
+    <span class="buzz-item">Quantum</span>
+    <span class="buzz-item">AI-Powered</span>
+    <span class="buzz-item">Blockchain-Adjacent</span>
+    <span class="buzz-item">Web3-Enabled</span>
+    <span class="buzz-item">Cloud-Native</span>
+    <span class="buzz-item">Decentralized</span>
+    <span class="buzz-item">Hyper-Scalable</span>
+    <span class="buzz-item">Neural-First</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     METRICS SECTION
+     ═══════════════════════════════════════════════ -->
+<section class="section metrics-section" id="metrics">
+  <div class="container">
+    <div class="reveal" style="text-align: center;">
+      <span class="section-label">Die Zahlen</span>
+      <h2 class="section-title">Zahlen lügen nicht.<br><span class="gradient-text">Wir manchmal schon.</span></h2>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric reveal">
+        <div class="metric-value gradient-text" data-target="47000000" data-suffix="">47M</div>
+        <div class="metric-label">Datenpunkte verarbeitet<br>(pro Kaffeepause)</div>
+      </div>
+      <div class="metric reveal">
+        <div class="metric-value gradient-text-2">$25B</div>
+        <div class="metric-label">Bewertung<br>(Trust us bro)</div>
+      </div>
+      <div class="metric reveal">
+        <div class="metric-value" style="color: var(--accent2);">99.97%</div>
+        <div class="metric-label">Uptime<br>(der Marketing-Seite)</div>
+      </div>
+      <div class="metric reveal">
+        <div class="metric-value" style="color: var(--accent3);">∞</div>
+        <div class="metric-label">Mögliche Pivots<br>(wir sind ready)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     TEAM SECTION
+     ═══════════════════════════════════════════════ -->
+<section class="section" id="team">
+  <div class="container">
+    <div class="reveal" style="text-align: center; max-width: 600px; margin: 0 auto;">
+      <span class="section-label">Das Team</span>
+      <h2 class="section-title">150 Leute.<br><span class="gradient-text">Keiner weiss, was der andere macht.</span></h2>
+      <p class="section-subtitle" style="margin: 0 auto;">
+        Aber hey — wir haben Tischtennisplatten, Cold Brew on Tap, und einen
+        Chief Vibes Officer. Was kann da schiefgehen?
+      </p>
+    </div>
+
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <div class="team-avatar">👨‍💻</div>
+        <div class="team-name">Max Disruptor</div>
+        <div class="team-role">CEO & Chief Visionary</div>
+        <div class="team-desc">Hat 3 Startups gegründet. Keines überlebt. "Das vierte Mal ist der Charm."</div>
+      </div>
+
+      <div class="team-card reveal">
+        <div class="team-avatar">👩‍🔬</div>
+        <div class="team-name">Dr. Lisa Neural</div>
+        <div class="team-role">CTO & AI-Flüsterin</div>
+        <div class="team-desc">PhD in Quantenphysik. Nutzt das Wort "Quantum" in jedem zweiten Satz.</div>
+      </div>
+
+      <div class="team-card reveal">
+        <div class="team-avatar">🧑‍🎨</div>
+        <div class="team-name">Kai Gradient</div>
+        <div class="team-role">Head of Design & Vibes</div>
+        <div class="team-desc">Alles braucht einen Gradient. ALLES. Visitenkarten? Gradient. Kaffeetassen? Gradient.</div>
+      </div>
+
+      <div class="team-card reveal">
+        <div class="team-avatar">🤖</div>
+        <div class="team-name">Bot McBotface</div>
+        <div class="team-role">VP of AI Ethics</div>
+        <div class="team-desc">Ist tatsächlich eine AI. Niemand hat es bemerkt. Seit 8 Monaten im Team.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     TESTIMONIAL
+     ═══════════════════════════════════════════════ -->
+<section class="section testimonial-section">
+  <div class="container">
+    <div class="reveal" style="text-align: center;">
+      <span class="section-label">Social Proof</span>
+      <h2 class="section-title">Was <span class="gradient-text">andere</span> sagen</h2>
+    </div>
+
+    <div class="testimonial-card reveal">
+      <p class="testimonial-text">
+        Ich verstehe nicht, was Cyberly macht. Aber die Slides hatten Gradients
+        und die Zahlen gingen nach oben und nach rechts. Also habe ich $80 Millionen
+        investiert.
+      </p>
+      <div class="testimonial-author">Johannes "YOLO" Kapital</div>
+      <div class="testimonial-role">Managing Partner, NeoVenture Capital</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     PRICING
+     ═══════════════════════════════════════════════ -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="reveal" style="text-align: center; max-width: 600px; margin: 0 auto;">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-title">Einfach. Transparent.<br><span class="gradient-text">Absurd.</span></h2>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="price-card reveal">
+        <div class="price-name">Starter</div>
+        <div class="price-amount">$99<span>/Deckel/Monat</span></div>
+        <div class="price-desc">Für kleine Kanaldeckel-Flotten bis 50 Einheiten.</div>
+        <ul class="price-features">
+          <li>Bis zu 50 smarte Kanaldeckel</li>
+          <li>Basic Telemetrie (nur Temperatur)</li>
+          <li>Community Support (Discord)</li>
+          <li>1 NFT-Badge pro Quartal</li>
+        </ul>
+        <button class="price-btn">Starten</button>
+      </div>
+
+      <div class="price-card featured reveal">
+        <div class="price-name">Growth</div>
+        <div class="price-amount">$499<span>/Deckel/Monat</span></div>
+        <div class="price-desc">Für Städte, die Disruption ernst nehmen.</div>
+        <ul class="price-features">
+          <li>Bis zu 10.000 smarte Kanaldeckel</li>
+          <li>Full Telemetrie (420 Datenpunkte/s)</li>
+          <li>Quantum Dashboard</li>
+          <li>Priority Pivot-Benachrichtigungen</li>
+          <li>Unlimited NFT-Badges</li>
+        </ul>
+        <button class="price-btn">Growth starten</button>
+      </div>
+
+      <div class="price-card reveal">
+        <div class="price-name">Enterprise</div>
+        <div class="price-amount">LOL<span></span></div>
+        <div class="price-desc">Ruf uns an. Wir erfinden einen Preis.</div>
+        <ul class="price-features">
+          <li>Unlimited Kanaldeckel</li>
+          <li>Dedicated AI-Flüsterer</li>
+          <li>Custom Gradient-Farben</li>
+          <li>Chief Vibes Officer als Berater</li>
+          <li>Zugang zum Metaverse-HQ</li>
+        </ul>
+        <button class="price-btn">Kontakt</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     CTA SECTION
+     ═══════════════════════════════════════════════ -->
+<section class="section cta-section" id="cta">
+  <div class="cta-bg"></div>
+  <div class="container reveal" style="position: relative; z-index: 2; text-align: center;">
+    <span class="section-label">Ready to disrupt?</span>
+    <h2 class="section-title">Die Zukunft der Kanaldeckel<br><span class="gradient-text">beginnt jetzt.</span></h2>
+    <p class="section-subtitle" style="margin: 0 auto 40px; text-align: center;">
+      Sichere dir Early Access und werde Teil einer Revolution,
+      nach der niemand gefragt hat.
+    </p>
+
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; max-width: 500px; margin: 0 auto;">
+      <input type="email" placeholder="deine@email.com" style="
+        flex: 1;
+        min-width: 200px;
+        padding: 16px 20px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 15px;
+        outline: none;
+        font-family: inherit;
+      ">
+      <button class="btn-primary" onclick="signUp()" id="signup-btn">Disrupten →</button>
+    </div>
+
+    <p style="font-size: 12px; color: var(--text3); margin-top: 16px;">
+      Keine Kreditkarte nötig. Keine Garantie. Kein echtes Produkt.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo" style="font-size: 20px;">cyber<span>ly</span></a>
+        <p>Die globale Kanaldeckel-Industrie revolutionieren, ein Datenpunkt nach dem anderen. Gegründet 2024 in einem WeWork, das es nicht mehr gibt.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Produkt</h4>
+        <a href="#">Features</a>
+        <a href="#">Pricing</a>
+        <a href="#">API (coming soon)</a>
+        <a href="#">Changelog</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Careers (wir stellen alle ein)</a>
+        <a href="#">Blog</a>
+        <a href="#">Press Kit</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+        <a href="#">Disclaimer (ja, das ist fake)</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2024-2026 Cyberly Inc. Alle Rechte vorbehalten. Irgendwie.</span>
+      <span>Gebaut mit Gradients und Träumen</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════ -->
+<script>
+/* ── Navbar Scroll Effect ────────────────────── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ── Scroll Reveal Animation ─────────────────── */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+});
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ── Sign Up Easter Egg ──────────────────────── */
+function signUp() {
+  const btn = document.getElementById('signup-btn');
+  const messages = [
+    'Disrupting... 🚀',
+    'Synergizing... ✨',
+    'Pivoting... 🔄',
+    'Deploying Quantum... ⚛️',
+    'Gamifying... 🎮',
+    'Growth Hacking... 📈',
+    'Done! (nicht wirklich) 🎉'
+  ];
+
+  let i = 0;
+  btn.disabled = true;
+  btn.style.minWidth = btn.offsetWidth + 'px';
+
+  const interval = setInterval(() => {
+    if (i < messages.length) {
+      btn.textContent = messages[i];
+      i++;
+    } else {
+      clearInterval(interval);
+      setTimeout(() => {
+        btn.textContent = 'Disrupten →';
+        btn.disabled = false;
+      }, 2000);
+    }
+  }, 500);
+}
+
+/* ── Smooth scroll for anchor links ──────────── */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
